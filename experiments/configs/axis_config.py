@@ -40,7 +40,8 @@ class LLMConfig:
         num_prototype: Number of prototypes.
         num_heads: Number of attention heads.
     """
-    model_name: str = 'deepseek-ai/DeepSeek-R1-Distill-Qwen-7B'
+    # model_name: str = 'deepseek-ai/DeepSeek-R1-Distill-Qwen-7B'
+    model_name: str = 'google/gemma-3-4b-it'
     token: str = os.getenv('HF_TOKEN', '')  # 从环境变量获取
     max_batch_size: int = 20
     num_fixed_tokens: int = 30

@@ -7,3 +7,4 @@ src/models/AXIS/AXIS_main.py
 .cache/
 *.zip
 *.tar
+.venv/

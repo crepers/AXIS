@@ -120,8 +120,8 @@ class MultiheadAttentionWithRoPE(nn.Module):
         V = self.v_proj(value)
 
         # Apply RoPE to Q and K
-        Q_rot = self.apply_rope(Q, freqs)
-        K_rot = self.apply_rope(K, freqs)
+        Q_rot = self.apply_rope(Q, freqs).to(query.dtype)
+        K_rot = self.apply_rope(K, freqs).to(key.dtype)
 
         # Reshape for multi-head attention
         Q_rot = Q_rot.view(B, T, self.num_heads, self.head_dim).transpose(1, 2)  # (B, nh, T, hs)

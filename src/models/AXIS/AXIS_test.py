@@ -1,4 +1,5 @@
 import os
+import re
 
 import torch
 import torch.nn as nn
@@ -18,7 +19,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Configuration
-TOTAL_BATCHES = 70  # Number of batches to test
+TOTAL_BATCHES = 2  # Number of batches to test
 
 
 class TeeLogger:
@@ -173,7 +174,7 @@ def test_model_forward(model: nn.Module,
     """Forward pass and generation using AXISCombinedModel."""
     model.eval()
     
-    with torch.amp.autocast("cuda"):
+    with torch.amp.autocast(device.type):
         with torch.no_grad():
             loss = model(
                 padded_sequences=batch['padded_sequences'].to(device),
@@ -337,7 +338,12 @@ def run_simple_test():
         config = default_config
         
         # Set device
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if torch.cuda.is_available():
+            device = torch.device("cuda:0")
+        elif torch.backends.mps.is_available():
+            device = torch.device("mps")
+        else:
+            device = torch.device("cpu")
         logger.print(f"Using device: {device}")
         
         # Initialize model

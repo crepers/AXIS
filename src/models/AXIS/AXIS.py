@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from typing import Tuple, List, Optional, Dict, Any, Union
-from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaConfig, LlamaModel, LlamaTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from src.models.AXIS.Pretrain_ts_encoder import TimeSeriesPretrainModel
 
 class MultiheadAttention(nn.Module):
@@ -244,13 +244,14 @@ class AXIS(nn.Module):
         # Initialize model components
         num_prototype = config.llm_config.num_prototype
         self.num_fixed_tokens = config.llm_config.num_fixed_tokens
-        self.vocab_size = self.model.config.vocab_size
+        # Get vocab size from embeddings to support models without config.vocab_size (e.g. Gemma 3)
+        self.vocab_size = self.model.get_input_embeddings().weight.shape[0]
         self.max_batch_size = config.llm_config.max_batch_size
         
         # Initialize Perceiver module
         self.perceiver = Perceiver(
             vocab_size=self.vocab_size,
-            hidden_size=self.model.config.hidden_size,
+            hidden_size=self.model.get_input_embeddings().weight.shape[1],
             d_proj=config.ts_config.d_proj,
             num_prototype=num_prototype,
             num_fixed_tokens=self.num_fixed_tokens,
